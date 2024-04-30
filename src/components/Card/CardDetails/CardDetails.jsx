@@ -1,44 +1,24 @@
 import React, { useState, useEffect } from "react";
-import {
-  Calendar,
-  Check,
-  CheckSquare,
-  Clock,
-  CreditCard,
-  List,
-  Plus,
-  Tag,
-  Trash,
-  Type,
-  X,
-} from "react-feather";
+import { CheckSquare, CreditCard, Tag, Trash, X } from "react-feather";
+import { DatePicker, Input, Space } from "antd";
+import moment from "moment";
 import Editable from "../../Editable/Editable";
 import Modal from "../../Modal/Modal";
 import "./CardDetails.css";
 import { v4 as uuidv4 } from "uuid";
 import Label from "../../Label/Label";
 
-export default function CardDetails(props) {
-  const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
+const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
 
+export default function CardDetails(props) {
+  // Define state variables
   const [values, setValues] = useState({ ...props.card });
   const [input, setInput] = useState(false);
   const [text, setText] = useState(values.title);
   const [labelShow, setLabelShow] = useState(false);
-  const Input = (props) => {
-    return (
-      <div className="">
-        <input
-          autoFocus
-          defaultValue={text}
-          type={"text"}
-          onChange={(e) => {
-            setText(e.target.value);
-          }}
-        />
-      </div>
-    );
-  };
+  const [selectedDate, setSelectedDate] = useState("");
+
+  // Function to add task
   const addTask = (value) => {
     values.task.push({
       id: uuidv4(),
@@ -48,11 +28,13 @@ export default function CardDetails(props) {
     setValues({ ...values });
   };
 
+  // Function to remove task
   const removeTask = (id) => {
-    const remaningTask = values.task.filter((item) => item.id !== id);
-    setValues({ ...values, task: remaningTask });
+    const remainingTask = values.task.filter((item) => item.id !== id);
+    setValues({ ...values, task: remainingTask });
   };
 
+  // Function to delete all tasks
   const deleteAllTask = () => {
     setValues({
       ...values,
@@ -60,24 +42,14 @@ export default function CardDetails(props) {
     });
   };
 
+  // Function to update task completion status
   const updateTask = (id) => {
     const taskIndex = values.task.findIndex((item) => item.id === id);
     values.task[taskIndex].completed = !values.task[taskIndex].completed;
     setValues({ ...values });
   };
-  const updateTitle = (value) => {
-    setValues({ ...values, title: value });
-  };
 
-  const calculatePercent = () => {
-    const totalTask = values.task.length;
-    const completedTask = values.task.filter(
-      (item) => item.completed === true
-    ).length;
-
-    return Math.floor((completedTask * 100) / totalTask) || 0;
-  };
-
+  // Function to remove tag
   const removeTag = (id) => {
     const tempTag = values.tags.filter((item) => item.id !== id);
     setValues({
@@ -86,6 +58,7 @@ export default function CardDetails(props) {
     });
   };
 
+  // Function to add tag
   const addTag = (value, color) => {
     values.tags.push({
       id: uuidv4(),
@@ -96,19 +69,44 @@ export default function CardDetails(props) {
     setValues({ ...values });
   };
 
-  const handelClickListner = (e) => {
+  // Function to update card title
+  const updateTitle = (value) => {
+    setValues({ ...values, title: value });
+  };
+
+  // Function to calculate completion percentage
+  const calculatePercent = () => {
+    const totalTask = values.task.length;
+    const completedTask = values.task.filter(
+      (item) => item.completed === true
+    ).length;
+
+    return Math.floor((completedTask * 100) / totalTask) || 0;
+  };
+
+  // Event handler for key press
+  const handleKeyPress = (e) => {
     if (e.code === "Enter") {
       setInput(false);
       updateTitle(text === "" ? values.title : text);
-    } else return;
+    }
   };
 
+  // Date handler
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
+  const onChange = (date, dateString) => {
+    console.log(date, dateString);
+    setSelectedDate(dateString);
+  };
   useEffect(() => {
-    document.addEventListener("keypress", handelClickListner);
+    document.addEventListener("keypress", handleKeyPress);
     return () => {
-      document.removeEventListener("keypress", handelClickListner);
+      document.removeEventListener("keypress", handleKeyPress);
     };
   });
+
   useEffect(() => {
     if (props.updateCard) props.updateCard(props.bid, values.id, values);
   }, [values]);
@@ -121,6 +119,7 @@ export default function CardDetails(props) {
           style={{ minWidth: "650px", position: "relative" }}
         >
           <div className="row pb-4">
+            {/* Title Section */}
             <div className="col-12">
               <div className="d-flex align-items-center pt-3 gap-2">
                 <CreditCard className="icon__md" />
@@ -138,7 +137,9 @@ export default function CardDetails(props) {
             </div>
           </div>
           <div className="row">
+            {/* Label and Task Section */}
             <div className="col-8">
+              {/* Label Section */}
               <h6 className="text-justify">Label</h6>
               <div
                 className="d-flex label__color flex-wrap"
@@ -164,12 +165,13 @@ export default function CardDetails(props) {
                     style={{ color: "#ccc" }}
                     className="d-flex justify-content-between align-items-center gap-2"
                   >
-                    <i> No Labels</i>
+                    <i>No Labels</i>
                   </span>
                 )}
               </div>
+              {/* Check List Section */}
               <div className="check__list mt-2">
-                <div className="d-flex align-items-end  justify-content-between">
+                <div className="d-flex align-items-end justify-content-between">
                   <div className="d-flex align-items-center gap-2">
                     <CheckSquare className="icon__md" />
                     <h6>Check List</h6>
@@ -194,7 +196,6 @@ export default function CardDetails(props) {
                     </div>
                   </div>
                 </div>
-
                 <div className="my-2">
                   {values.task.length !== 0 ? (
                     values.task.map((item, index) => (
@@ -207,7 +208,6 @@ export default function CardDetails(props) {
                             updateTask(item.id);
                           }}
                         />
-
                         <h6
                           className={`flex-grow-1 ${
                             item.completed === true ? "strike-through" : ""
@@ -221,7 +221,7 @@ export default function CardDetails(props) {
                           }}
                           style={{
                             cursor: "pointer",
-                            widht: "18px",
+                            width: "18px",
                             height: "18px",
                           }}
                         />
@@ -230,7 +230,6 @@ export default function CardDetails(props) {
                   ) : (
                     <></>
                   )}
-
                   <Editable
                     parentClass={"task__editable"}
                     name={"Add Task"}
@@ -240,6 +239,7 @@ export default function CardDetails(props) {
                 </div>
               </div>
             </div>
+            {/* Add to Card Section */}
             <div className="col-4">
               <h6>Add to card</h6>
               <div className="d-flex card__action__btn flex-column gap-2">
@@ -257,13 +257,15 @@ export default function CardDetails(props) {
                     onClose={setLabelShow}
                   />
                 )}
-                <button>
-                  <span className="icon__sm">
-                    <Clock />
-                  </span>
-                  Date
-                </button>
 
+                {/* Date picker  */}
+                <Space direction="vertical">
+                  <DatePicker
+                    onChange={onChange}
+                    style={{ width: "100%" }}
+                    disabledDate={disabledDate}
+                  />
+                </Space>
                 <button onClick={() => props.removeCard(props.bid, values.id)}>
                   <span className="icon__sm">
                     <Trash />

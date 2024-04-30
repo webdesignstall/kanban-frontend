@@ -26,6 +26,10 @@ const AllBoards = ({ selectedItem }) => {
 
   const updateData = (newData) => {
     setData(newData);
+    // Example API call to update data
+    // POST request to update board columns
+    // Params: boardId (or selectedItem), newData
+    // Body: newData
   };
 
   const setName = (title, bid) => {
@@ -34,6 +38,10 @@ const AllBoards = ({ selectedItem }) => {
         board.id === bid ? { ...board, columnName: title } : board
       )
     );
+    // Example API call to update board name
+    // POST request to update board name
+    // Params: boardId (or selectedItem), newColumnName
+    // Body: { columnName: newColumnName }
   };
 
   const dragCardInBoard = (source, destination) => {
@@ -51,6 +59,10 @@ const AllBoards = ({ selectedItem }) => {
     const destinationIndex = destination.index;
     destinationBoard.card.splice(destinationIndex, 0, draggedCard);
     updateData(newData);
+    // Example API call to update card position
+    // POST request to update card position
+    // Params: sourceBoardId, destinationBoardId, sourceIndex, destinationIndex
+    // Body: { sourceIndex, destinationIndex }
   };
 
   const addCard = (title, bid) => {
@@ -61,6 +73,10 @@ const AllBoards = ({ selectedItem }) => {
           : board
       )
     );
+    // Example API call to add a card
+    // POST request to add a card
+    // Params: boardId, newCardData
+    // Body: { id: newCardId, title: newCardTitle }
   };
 
   const removeCard = (boardId, cardId) => {
@@ -74,6 +90,10 @@ const AllBoards = ({ selectedItem }) => {
           : board
       )
     );
+    // Example API call to remove a card
+    // POST request to remove a card
+    // Params: boardId, cardId
+    // Body: None
   };
 
   const addBoard = (title) => {
@@ -83,10 +103,18 @@ const AllBoards = ({ selectedItem }) => {
       card: [],
     };
     updateData([...data, newBoard]);
+    // Example API call to add a board
+    // POST request to add a board
+    // Params: newBoardData
+    // Body: { id: newBoardId, columnName: newBoardColumnName, card: [] }
   };
 
   const removeBoard = (bid) => {
     updateData(data.filter((board) => board.id !== bid));
+    // Example API call to remove a board
+    // POST request to remove a board
+    // Params: boardId
+    // Body: None
   };
 
   const onDragEnd = (result) => {
