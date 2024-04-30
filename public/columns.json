@@ -1,0 +1,255 @@
+[
+  {
+    "boardId": 1,
+    "columns": [
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "Todo",
+        "card": [
+          {
+            "id": "29834d14-0412-4e87-afc5-09067e43f365",
+            "title": "Design homepage",
+            "tags": [
+              {
+                "id": "cb65945f-86df-4991-9c46-912c10fa5ddc",
+                "tagName": "UI/UX",
+                "color": "#ff9f1a"
+              }
+            ],
+            "task": [
+              {
+                "id": "6c8495ba-4a96-43a4-b259-ee61593c3e93",
+                "task": "Create wireframes",
+                "completed": true
+              },
+              {
+                "id": "2fcbf40c-5522-45fb-b725-90f6dc289e70",
+                "task": "Select color scheme",
+                "completed": false
+              }
+            ]
+          },
+          {
+            "id": "bde71814-8c8d-4693-b05c-9db9711be4d5",
+            "title": "Develop login functionality",
+            "tags": [
+              {
+                "id": "c46659c9-0aba-444a-ba00-0bd0f56533a6",
+                "tagName": "Backend",
+                "color": "#61bd4f"
+              }
+            ],
+            "task": [
+              {
+                "id": "aebeec3b-d73d-4a27-8c44-7110af13a1d7",
+                "task": "Implement authentication",
+                "completed": false
+              },
+              {
+                "id": "81c7f1c1-8393-4592-8baf-646c9c7ac5e1",
+                "task": "Set up database",
+                "completed": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "In Progress",
+        "card": []
+      },
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "Review",
+        "card": []
+      },
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "Done",
+        "card": []
+      }
+    ]
+  },
+  {
+    "boardId": 2,
+    "columns": [
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "Todo",
+        "card": [
+          {
+            "id": "29834d14-0412-4e87-afc5-09067e43f365",
+            "title": "Setup development environment",
+            "tags": [
+              {
+                "id": "cb65945f-86df-4991-9c46-912c10fa5ddc",
+                "tagName": "Environment",
+                "color": "#ff9f1a"
+              }
+            ],
+            "task": [
+              {
+                "id": "6c8495ba-4a96-43a4-b259-ee61593c3e93",
+                "task": "Install Node.js and npm",
+                "completed": true
+              },
+              {
+                "id": "2fcbf40c-5522-45fb-b725-90f6dc289e70",
+                "task": "Set up project directory",
+                "completed": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "b66ce837-dd69-449b-aade-39c94803791b",
+        "columnName": "In Progress",
+        "card": []
+      },
+      {
+        "id": "b66ce837-dd69-449b-aade-39c94803791b",
+        "columnName": "Review",
+        "card": []
+      },
+      {
+        "id": "b66ce837-dd69-449b-aade-39c94803791b",
+        "columnName": "Done",
+        "card": []
+      }
+    ]
+  },
+  {
+    "boardId": 3,
+    "columns": [
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "To-do",
+        "card": [
+          {
+            "id": "29834d14-0412-4e87-afc5-09067e43f365",
+            "title": "Write project proposal",
+            "tags": [
+              {
+                "id": "cb65945f-86df-4991-9c46-912c10fa5ddc",
+                "tagName": "Planning",
+                "color": "#ff9f1a"
+              }
+            ],
+            "task": [
+              {
+                "id": "6c8495ba-4a96-43a4-b259-ee61593c3e93",
+                "task": "Research project scope",
+                "completed": true
+              },
+              {
+                "id": "2fcbf40c-5522-45fb-b725-90f6dc289e70",
+                "task": "Draft project timeline",
+                "completed": false
+              }
+            ]
+          },
+          {
+            "id": "bde71814-8c8d-4693-b05c-9db9711be4d5",
+            "title": "Gather project requirements",
+            "tags": [],
+            "task": []
+          }
+        ]
+      },
+      {
+        "id": "b66ce837-dd69-449b-aade-39c94803791b",
+        "columnName": "In Progress",
+        "card": [
+          {
+            "id": "29834d14-0412-4e87-afc5-09067e43f365",
+            "title": "Create wireframes",
+            "tags": [
+              {
+                "id": "cb65945f-86df-4991-9c46-912c10fa5ddc",
+                "tagName": "UI/UX",
+                "color": "#ff9f1a"
+              }
+            ],
+            "task": [
+              {
+                "id": "6c8495ba-4a96-43a4-b259-ee61593c3e93",
+                "task": "Design homepage",
+                "completed": false
+              },
+              {
+                "id": "2fcbf40c-5522-45fb-b725-90f6dc289e70",
+                "task": "Create landing page layout",
+                "completed": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "12345678-abcd-1234-abcd-123456789abc",
+        "columnName": "Review",
+        "card": []
+      },
+      {
+        "id": "87654321-dcba-4321-dcba-987654321cba",
+        "columnName": "Done",
+        "card": []
+      }
+    ]
+  },
+  {
+    "boardId": 4,
+    "columns": [
+      {
+        "id": "eaffcda9-70fc-41cb-822f-0bb88a3c0cfa",
+        "columnName": "Backlog",
+        "card": [
+          {
+            "id": "29834d14-0412-4e87-afc5-09067e43f365",
+            "title": "Refactor codebase",
+            "tags": [
+              {
+                "id": "cb65945f-86df-4991-9c46-912c10fa5ddc",
+                "tagName": "Maintenance",
+                "color": "#ff9f1a"
+              }
+            ],
+            "task": [
+              {
+                "id": "6c8495ba-4a96-43a4-b259-ee61593c3e93",
+                "task": "Identify code smells",
+                "completed": false
+              },
+              {
+                "id": "2fcbf40c-5522-45fb-b725-90f6dc289e70",
+                "task": "Implement refactoring changes",
+                "completed": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "b66ce837-dd69-449b-aade-39c94803791b",
+        "columnName": "In Progress",
+        "card": []
+      },
+      {
+        "id": "12345678-abcd-1234-abcd-123456789abc",
+        "columnName": "Review",
+        "card": []
+      },
+      {
+        "id": "87654321-dcba-4321-dcba-987654321cba",
+        "columnName": "Done",
+        "card": []
+      }
+    ]
+  },
+  {
+    "boardId": 5,
+    "columns": []
+  }
+]

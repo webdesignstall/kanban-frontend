@@ -5,27 +5,33 @@ import Board from "../Board/Board";
 import Editable from "../Editable/Editable";
 
 const AllBoards = ({ selectedItem }) => {
-  const [data, setData] = useState(() => {
-    const localStorageData = localStorage.getItem("Kanban-Board");
-    if (localStorageData) {
-      const parsedData = JSON.parse(localStorageData);
-      return parsedData[selectedItem] || [];
-    }
-    return [];
-  });
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchColumnData = async () => {
+      try {
+        const res = await fetch("./columns.json");
+        const columnsData = await res.json();
+        const selectedBoard = columnsData.find(
+          (item) => item.boardId === Number(selectedItem)
+        );
+        setData(selectedBoard?.columns || []);
+      } catch (error) {
+        console.error("Error fetching column data: ", error);
+      }
+    };
+
+    fetchColumnData();
+  }, [selectedItem]);
 
   const updateData = (newData) => {
-    setData((prevData) => {
-      const updatedData = { ...prevData, [selectedItem]: newData };
-      localStorage.setItem("Kanban-Board", JSON.stringify(updatedData));
-      return updatedData;
-    });
+    setData(newData);
   };
 
   const setName = (title, bid) => {
     updateData(
       data?.map((board) =>
-        board.id === bid ? { ...board, boardName: title } : board
+        board.id === bid ? { ...board, columnName: title } : board
       )
     );
   };
@@ -73,7 +79,7 @@ const AllBoards = ({ selectedItem }) => {
   const addBoard = (title) => {
     const newBoard = {
       id: uuidv4(),
-      boardName: title,
+      columnName: title,
       card: [],
     };
     updateData([...data, newBoard]);
@@ -90,23 +96,16 @@ const AllBoards = ({ selectedItem }) => {
     dragCardInBoard(source, destination);
   };
 
-  useEffect(() => {
-    const localStorageData = JSON.parse(localStorage.getItem("Kanban-Board"));
-    if (localStorageData) {
-      setData(localStorageData[selectedItem] || []);
-    }
-  }, [selectedItem]);
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div>
         <div className="app_outer">
           <div className="app_boards">
-            {data?.map((board) => (
+            {data.map((board) => (
               <Board
                 key={board.id}
                 id={board.id}
-                name={board.boardName}
+                name={board.columnName}
                 card={board.card}
                 setName={setName}
                 addCard={addCard}
@@ -119,7 +118,7 @@ const AllBoards = ({ selectedItem }) => {
               name={"New Column"}
               btnName={"New Column"}
               onSubmit={addBoard}
-              placeholder={"Enter column  name"}
+              placeholder={"Enter column name"}
             />
           </div>
         </div>

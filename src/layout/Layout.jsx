@@ -1,38 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppstoreOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import AllBoards from "../components/AllBoard/AllBoards";
 import AddBoardModal from "../components/AddBoardModal/AddBoardModal";
 const { Header, Content, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
-
-const items = [
-  getItem("Board 1", "1", <AppstoreOutlined />),
-  getItem("Board 2", "2", <AppstoreOutlined />),
-];
-
 const DashboardLayout = () => {
   const [collapse, setCollapse] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIKey, setSelectedKey] = useState("1");
-  const [selectedItem, setSelectedItem] = useState("");
+  const [boardsData, setBoardsData] = useState([]);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const handleMenuItemClick = (item) => {
     setSelectedKey(item.key);
-    const sItem = items.find((itm) => itm.key === item.key);
-    setSelectedItem(sItem.label);
   };
+
+  function getItem(label, key, icon, children) {
+    return {
+      key,
+      icon,
+      label,
+      children,
+    };
+  }
+
+  const items = [
+    getItem("Board 1", "1", <AppstoreOutlined />),
+    getItem("Board 2", "2", <AppstoreOutlined />),
+  ];
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("./boards.json");
+      const data = await res.json();
+      const updatedItems = data.map((item) => ({
+        label: item.name,
+        key: item.id,
+        icon: <AppstoreOutlined />,
+      }));
+      setBoardsData(updatedItems);
+    })();
+  }, []);
 
   return (
     <Layout
@@ -51,7 +63,7 @@ const DashboardLayout = () => {
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
-          items={items}
+          items={boardsData}
           onClick={handleMenuItemClick}
           selectedKeys={[selectedIKey]}
         />
@@ -75,7 +87,7 @@ const DashboardLayout = () => {
             margin: "0 16px",
           }}
         >
-          <AllBoards selectedItem={selectedItem} />
+          <AllBoards selectedItem={selectedIKey} />
           {isModalOpen && (
             <AddBoardModal
               isModalOpen={isModalOpen}
