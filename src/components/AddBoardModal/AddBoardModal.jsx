@@ -4,14 +4,14 @@ import { CloseOutlined } from "@ant-design/icons";
 import { createBoard } from "../../APIs/BoardAPIs";
 import { createColumn } from "../../APIs/ColumnAPIs";
 
-const AddBoardModal = ({ isModalOpen, setIsModalOpen }) => {
+const AddBoardModal = ({ isModalOpen, setIsModalOpen, setRefetchBoard }) => {
   const [boardName, setBoardName] = useState("");
   const [columns, setColumns] = useState(["Todo", "In Progress"]);
 
   const userId = "66307f052a62c8119ee36db3";
   // const boardId = "6630884c6e28d468972769a5";
 
-  const handleOk = async () => {
+  const handleCreateNewBoard = async () => {
     const newBoardData = {
       boardName,
       userId,
@@ -20,6 +20,7 @@ const AddBoardModal = ({ isModalOpen, setIsModalOpen }) => {
     const result = await createBoard(newBoardData);
     if (result?.status === "success") {
       setIsModalOpen(false);
+      setRefetchBoard((prev) => !prev);
       // const boardId = result.data._id;
       // after creating board successfully
       // then, create columns
@@ -59,7 +60,7 @@ const AddBoardModal = ({ isModalOpen, setIsModalOpen }) => {
       <Modal
         title="Add New Board"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={handleCreateNewBoard}
         onCancel={handleCancel}
         okText="Create New Board"
       >

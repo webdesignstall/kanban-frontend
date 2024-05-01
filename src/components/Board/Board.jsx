@@ -6,18 +6,22 @@ import Editable from "../Editable/Editable";
 import Dropdown from "../Dropdown/Dropdown";
 import { Droppable } from "react-beautiful-dnd";
 export default function Board(props) {
-  const [show, setShow] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-
-  console.log(props);
+  const [selectedColumn, setSelectedColumn] = useState("");
 
   useEffect(() => {
     document.addEventListener("keypress", (e) => {
-      if (e.code === "Enter") setShow(false);
+      if (e.code === "Enter") {
+        setSelectedColumn("");
+        props.setShow(false);
+      }
     });
     return () => {
       document.removeEventListener("keypress", (e) => {
-        if (e.code === "Enter") setShow(false);
+        if (e.code === "Enter") {
+          setSelectedColumn("");
+          props.setShow(false);
+        }
       });
     };
   });
@@ -25,13 +29,14 @@ export default function Board(props) {
   return (
     <div style={{ marginBottom: "20px" }} className="board">
       <div className="board__top">
-        {show ? (
+        {props.show && props.id === selectedColumn ? (
           <div>
             <input
               className="title__input"
               type={"text"}
               defaultValue={props.name}
-              onChange={(e) => {
+              onBlur={(e) => {
+                setSelectedColumn("");
                 props.setName(e.target.value, props.id);
               }}
             />
@@ -40,7 +45,8 @@ export default function Board(props) {
           <div>
             <p
               onClick={() => {
-                setShow(true);
+                setSelectedColumn(props?.id);
+                props.setShow(true);
               }}
               className="board__title"
             >

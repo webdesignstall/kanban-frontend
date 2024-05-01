@@ -5,36 +5,33 @@ import moment from "moment";
 import Editable from "../../Editable/Editable";
 import Modal from "../../Modal/Modal";
 import "./CardDetails.css";
-import { v4 as uuidv4 } from "uuid";
 import Label from "../../Label/Label";
 
 const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
 
 export default function CardDetails(props) {
-  // Define state variables
   const [values, setValues] = useState({ ...props.card });
   const [input, setInput] = useState(false);
   const [text, setText] = useState(values.title);
   const [labelShow, setLabelShow] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
 
   // Function to add task
   const addSubTask = (value) => {
-    console.log({ subtask: value });
+    console.log("Add new subtask", { subtask: value });
     // call the subtask api
   };
 
   // Function to remove task
-  const removeTask = (id) => {
-    console.log({ subtaskId: id });
+  const removeSubTask = (id) => {
+    console.log("Remove subtask", { subtaskId: id });
     // const remainingTask = values.subTasks?.filter((item) => item._id !== id);
     // setValues({ ...values, task: remainingTask });
   };
 
   // Function to delete all tasks
-  const deleteAllTask = () => {
+  const deleteAllSubTask = () => {
     // remove all subtask by parent task id
-    console.log({ AllTaskByTaskId: props.card._id });
+    console.log("Remove all the subtask", { AllTaskByTaskId: props.card._id });
     // setValues({
     //   ...values,
     //   task: [],
@@ -42,36 +39,46 @@ export default function CardDetails(props) {
   };
 
   // Function to update task completion status
-  const updateTask = (id) => {
-    const taskIndex = values.subTasks.findIndex((item) => item.id === id);
+  const updateSubTask = (id) => {
+    console.log("Update subtask as complete or incomplete", id);
+    const taskIndex = values.subTasks.findIndex((item) => item._id === id);
     values.subTasks[taskIndex].completed =
       !values.subTasks[taskIndex].completed;
     setValues({ ...values });
   };
 
   // Function to remove tag
-  const removeTag = (id) => {
-    const tempTag = values.tags?.filter((item) => item.id !== id);
-    setValues({
-      ...values,
-      tags: tempTag,
-    });
+  const removeLabel = (id) => {
+    // call api to remove label
+    console.log("Remove label", id);
+    // const tempTag = values.tags?.filter((item) => item.id !== id);
+    // setValues({
+    //   ...values,
+    //   tags: tempTag,
+    // });
   };
 
   // Function to add tag
-  const addTag = (value, color) => {
-    values.tags.push({
-      id: uuidv4(),
-      tagName: value,
-      color: color,
-    });
+  const addNewLabel = (value, color) => {
+    console.log("Add new label", { value, color });
+    // values.tags.push({
+    //   id: uuidv4(),
+    //   tagName: value,
+    //   color: color,
+    // });
 
-    setValues({ ...values });
+    // setValues({ ...values });
   };
 
   // Function to update card title
-  const updateTitle = (value) => {
-    setValues({ ...values, title: value });
+  const updateTitleByEnterKey = (value) => {
+    console.log("Update card title", { onEnterKey: value });
+    // setValues({ ...values, title: value });
+  };
+
+  const handleUpdateTaskTitle = (title) => {
+    setInput(false);
+    console.log("Update card title", { onBlur: title });
   };
 
   // Function to calculate completion percentage
@@ -88,7 +95,7 @@ export default function CardDetails(props) {
   const handleKeyPress = (e) => {
     if (e.code === "Enter") {
       setInput(false);
-      updateTitle(text === "" ? values.title : text);
+      updateTitleByEnterKey(text === "" ? values.title : text);
     }
   };
 
@@ -96,10 +103,11 @@ export default function CardDetails(props) {
   const disabledDate = (current) => {
     return current && current < moment().startOf("day");
   };
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-    setSelectedDate(dateString);
+
+  const handleDateChange = (date, dateString) => {
+    console.log("Update card date", dateString);
   };
+
   useEffect(() => {
     document.addEventListener("keypress", handleKeyPress);
     return () => {
@@ -124,7 +132,11 @@ export default function CardDetails(props) {
               <div className="d-flex align-items-center pt-3 gap-2">
                 <CreditCard className="icon__md" />
                 {input ? (
-                  <Input title={values.title} />
+                  <Input
+                    onBlur={(e) => handleUpdateTaskTitle(e.target.value)}
+                    defaultValue={values.title}
+                    onChange={(e) => setText(e.target.value)}
+                  />
                 ) : (
                   <h5
                     style={{ cursor: "pointer" }}
@@ -145,17 +157,25 @@ export default function CardDetails(props) {
                 className="d-flex label__color flex-wrap"
                 style={{ width: "500px", paddingRight: "10px" }}
               >
-                {values.tags?.length !== 0 ? (
-                  values.tags?.map((item) => (
+                {[...values?.labels, { labelName: "Test", color: "#eb5a46" }]
+                  ?.length !== 0 ? (
+                  [
+                    ...values?.labels,
+                    {
+                      labelName: "Test",
+                      color: "#eb5a46",
+                      _id: "wetuhewrituvi5uth",
+                    },
+                  ]?.map((item) => (
                     <span
                       className="d-flex justify-content-between align-items-center gap-2"
                       style={{ backgroundColor: item.color }}
                     >
-                      {item.tagName?.length > 10
-                        ? item.tagName.slice(0, 6) + "..."
-                        : item.tagName}
+                      {item.labelName?.length > 10
+                        ? item.labelName.slice(0, 6) + "..."
+                        : item.labelName}
                       <X
-                        onClick={() => removeTag(item.id)}
+                        onClick={() => removeLabel(item._id)}
                         style={{ width: "15px", height: "15px" }}
                       />
                     </span>
@@ -177,7 +197,7 @@ export default function CardDetails(props) {
                     <h6>Check List</h6>
                   </div>
                   <div className="card__action__btn">
-                    <button onClick={() => deleteAllTask()}>
+                    <button onClick={() => deleteAllSubTask()}>
                       Delete all tasks
                     </button>
                   </div>
@@ -185,7 +205,7 @@ export default function CardDetails(props) {
                 <div className="progress__bar mt-2 mb-2">
                   <div className="progress flex-1">
                     <div
-                      class="progress-bar"
+                      className="progress-bar"
                       role="progressbar"
                       style={{ width: calculatePercent() + "%" }}
                       aria-valuenow="75"
@@ -205,7 +225,7 @@ export default function CardDetails(props) {
                           type="checkbox"
                           defaultChecked={item.completed}
                           onChange={() => {
-                            updateTask(item.id);
+                            updateSubTask(item._id);
                           }}
                         />
                         <h6
@@ -217,7 +237,7 @@ export default function CardDetails(props) {
                         </h6>
                         <Trash
                           onClick={() => {
-                            removeTask(item._id);
+                            removeSubTask(item._id);
                           }}
                           style={{
                             cursor: "pointer",
@@ -252,8 +272,8 @@ export default function CardDetails(props) {
                 {labelShow && (
                   <Label
                     color={colors}
-                    addTag={addTag}
-                    tags={values.tags}
+                    addNewLabel={addNewLabel}
+                    labels={values?.labels || []}
                     onClose={setLabelShow}
                   />
                 )}
@@ -261,7 +281,7 @@ export default function CardDetails(props) {
                 {/* Date picker  */}
                 <Space direction="vertical">
                   <DatePicker
-                    onChange={onChange}
+                    onChange={handleDateChange}
                     style={{ width: "100%" }}
                     disabledDate={disabledDate}
                   />

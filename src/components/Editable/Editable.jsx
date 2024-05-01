@@ -8,6 +8,7 @@ const Editable = (props) => {
   const [text, setText] = useState(props.defaultValue || "");
 
   const handleOnSubmit = (e) => {
+    console.log("Clicked");
     e.preventDefault();
     if (text && props.onSubmit) {
       setText("");

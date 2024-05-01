@@ -7,6 +7,8 @@ import { createColumn, getColumnsByBoardId } from "../../APIs/ColumnAPIs";
 
 const AllBoards = ({ selectedItem }) => {
   const [data, setData] = useState([]);
+  const [refetchColumn, setRefetchColumn] = useState(false);
+  const [isEditTitle, setIsEditTitle] = useState(false);
 
   // useEffect(() => {
   //   const fetchColumnData = async () => {
@@ -31,7 +33,7 @@ const AllBoards = ({ selectedItem }) => {
         if (selectedItem) {
           const data = await getColumnsByBoardId(selectedItem);
           setData(data?.data);
-          console.log(data?.data);
+          console.log("All column", data?.data);
         }
       } catch (error) {
         console.error("Error fetching column data: ", error);
@@ -39,7 +41,7 @@ const AllBoards = ({ selectedItem }) => {
     };
 
     fetchColumnData();
-  }, [selectedItem]);
+  }, [selectedItem, refetchColumn]);
 
   const updateData = (newData) => {
     setData(newData);
@@ -49,12 +51,14 @@ const AllBoards = ({ selectedItem }) => {
     // Body: newData
   };
 
-  const setName = (title, bid) => {
-    updateData(
-      data?.map((board) =>
-        board.id === bid ? { ...board, columnName: title } : board
-      )
-    );
+  const updateColumnName = (title, bid) => {
+    console.log(title, bid);
+    setIsEditTitle(false);
+    // updateData(
+    //   data?.map((board) =>
+    //     board.id === bid ? { ...board, columnName: title } : board
+    //   )
+    // );
     // Example API call to update board name
     // POST request to update board name
     // Params: boardId (or selectedItem), newColumnName
@@ -118,13 +122,19 @@ const AllBoards = ({ selectedItem }) => {
   };
 
   const addCard = (title, bid) => {
-    updateData(
-      data?.map((board) =>
-        board.id === bid
-          ? { ...board, card: [...board.card, { id: uuidv4(), title }] }
-          : board
-      )
-    );
+    const newCard = {
+      title,
+      serialNo: 4, // how to catch the serial number or input it
+      columnId: bid,
+    };
+    console.log(newCard);
+    // updateData(
+    //   data?.map((board) =>
+    //     board.id === bid
+    //       ? { ...board, card: [...board.card, { id: uuidv4(), title }] }
+    //       : board
+    //   )
+    // );
     // Example API call to add a card
     // POST request to add a card
     // Params: boardId, newCardData
@@ -155,9 +165,8 @@ const AllBoards = ({ selectedItem }) => {
       tasks: [],
     };
     const result = await createColumn(newData);
-
-    if (result.status === "success") {
-      // show alert to confirm
+    if (result?.status === "success") {
+      setRefetchColumn((prev) => !prev);
       console.log(result);
     } else {
       console.log(result);
@@ -201,10 +210,12 @@ const AllBoards = ({ selectedItem }) => {
                   id={board._id}
                   name={board.columnName}
                   card={board?.tasks}
-                  setName={setName}
+                  setName={updateColumnName}
                   addCard={addCard}
                   removeCard={removeCard}
                   removeBoard={removeBoard}
+                  show={isEditTitle}
+                  setShow={setIsEditTitle}
                 />
               ))}
               <Editable
