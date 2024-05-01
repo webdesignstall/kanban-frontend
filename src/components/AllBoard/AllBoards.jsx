@@ -4,11 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 import Board from "../Board/Board";
 import Editable from "../Editable/Editable";
 import { createColumn, getColumnsByBoardId } from "../../APIs/ColumnAPIs";
+import { Button, Input } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 const AllBoards = ({ selectedItem }) => {
   const [data, setData] = useState([]);
   const [refetchColumn, setRefetchColumn] = useState(false);
   const [isEditTitle, setIsEditTitle] = useState(false);
+  const [isCreateColumn, setIsCreateColumn] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState("");
 
   // useEffect(() => {
   //   const fetchColumnData = async () => {
@@ -54,15 +58,6 @@ const AllBoards = ({ selectedItem }) => {
   const updateColumnName = (title, bid) => {
     console.log(title, bid);
     setIsEditTitle(false);
-    // updateData(
-    //   data?.map((board) =>
-    //     board.id === bid ? { ...board, columnName: title } : board
-    //   )
-    // );
-    // Example API call to update board name
-    // POST request to update board name
-    // Params: boardId (or selectedItem), newColumnName
-    // Body: { columnName: newColumnName }
   };
 
   // const dragCardInBoard = (source, destination) => {
@@ -122,24 +117,24 @@ const AllBoards = ({ selectedItem }) => {
   };
 
   const addCard = async (title, bid) => {
-
- /*   const newCard = {
+    /*   const newCard = {
       title,
       serialNo: 4, // how to catch the serial number or input it
       columnId: bid,
     };
     console.log(newCard);*/
 
-
-    const searchColumn = data?.find(item => item?.columnName === bid);
-
+    const searchColumn = data?.find((item) => item?.columnName === bid);
 
     const newCard = {
-      title
+      title,
     };
 
-    const newTask = {...searchColumn, tasks: [...searchColumn?.tasks, {title}] };
-  /*  debugger
+    const newTask = {
+      ...searchColumn,
+      tasks: [...searchColumn?.tasks, { title }],
+    };
+    /*  debugger
     console.log(newTask);
     debugger*/
 
@@ -150,7 +145,6 @@ const AllBoards = ({ selectedItem }) => {
     } else {
       console.log(result);
     }
-
 
     // const result = await createColumn(newTask);
 
@@ -165,6 +159,14 @@ const AllBoards = ({ selectedItem }) => {
     // POST request to add a card
     // Params: boardId, newCardData
     // Body: { id: newCardId, title: newCardTitle }
+    // const addCard = (title, bid) => {
+    // const newCard = {
+    //   boardId: selectedItem,
+    //   columnName: ,
+    //   serialNo: 4, // how to catch the serial number or input it
+    //   columnId: bid,
+    // };
+    console.log(data);
   };
 
   const removeCard = (boardId, cardId) => {
@@ -184,40 +186,36 @@ const AllBoards = ({ selectedItem }) => {
     // Body: None
   };
 
-  const addNewColumn = async (title) => {
-    /*const newData = {
-      columnName: title,
+  const addNewColumn = async () => {
+    const newData = {
+      columnName: newColumnTitle,
       boardId: selectedItem,
       tasks: [],
-    };*/
+    };
 
-   /* debugger
+    /* debugger
 
     console.log();
 
     debugger*/
 
-    const result = await createColumn({...data, columnName: title, boardId: selectedItem});
+    const result = await createColumn({
+      ...data,
+      columnName: title,
+      boardId: selectedItem,
+    });
     if (result?.status === "success") {
       setRefetchColumn((prev) => !prev);
+      setIsCreateColumn(false);
       console.log(result);
     } else {
       console.log(result);
     }
-    // const newBoard = {
-    //   id: uuidv4(),
-    //   columnName: title,
-    //   card: [],
-    // };
-    // updateData([...data, newBoard]);
-    // Example API call to add a board
-    // POST request to add a board
-    // Params: newBoardData
-    // Body: { id: newBoardId, columnName: newBoardColumnName, card: [] }
   };
 
-  const removeBoard = (bid) => {
-    updateData(data?.filter((board) => board.id !== bid));
+  const removeColumn = (columnId) => {
+    console.log("Delete column", columnId);
+    // updateData(data?.filter((board) => board.id !== bid));
     // Example API call to remove a board
     // POST request to remove a board
     // Params: boardId
@@ -236,7 +234,7 @@ const AllBoards = ({ selectedItem }) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div>
           <div className="app_outer">
-            <div className="app_boards">
+            <div style={{ height: "100vh" }} className="app_boards">
               {data?.map((board) => (
                 <Board
                   boards={data}
@@ -247,18 +245,57 @@ const AllBoards = ({ selectedItem }) => {
                   setName={updateColumnName}
                   addCard={addCard}
                   removeCard={removeCard}
-                  removeBoard={removeBoard}
+                  removeColumn={removeColumn}
                   show={isEditTitle}
                   setShow={setIsEditTitle}
                 />
               ))}
-              <Editable
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#F0F0F0",
+                  padding: "10px 40px",
+                  borderRadius: "5px",
+                  height: "82%",
+                  border: "1px solid #D3D3D3",
+                }}
+              >
+                {isCreateColumn ? (
+                  <div>
+                    <p>
+                      <Input
+                        autoFocus
+                        onChange={(e) => setNewColumnTitle(e.target.value)}
+                        placeholder="Enter column name"
+                      />
+                    </p>
+                    <Button
+                      onClick={() => setIsCreateColumn(false)}
+                      style={{ marginRight: "5px" }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={addNewColumn} type="primary">
+                      Create
+                    </Button>
+                  </div>
+                ) : (
+                  <p style={{ padding: "0px 24px" }}>
+                    <Button onClick={() => setIsCreateColumn(true)}>
+                      <PlusOutlined /> <span>New Column</span>
+                    </Button>
+                  </p>
+                )}
+              </div>
+              {/* <Editable
                 className={"add__board"}
                 name={"New Column"}
                 btnName={"New Column"}
                 onSubmit={addNewColumn}
                 placeholder={"Enter column name"}
-              />
+              /> */}
             </div>
           </div>
         </div>
