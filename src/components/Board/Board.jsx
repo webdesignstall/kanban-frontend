@@ -102,6 +102,7 @@ const Board = (props) => {
           >
             {props?.card?.map((items, index) => (
               <Card
+                  setData={props?.setData}
                 boards={props?.boards}
                 columnName={props?.name}
                 bid={props._id}

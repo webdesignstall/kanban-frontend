@@ -238,6 +238,7 @@ const AllBoards = ({ selectedItem }) => {
             <div style={{ height: "100vh" }} className="app_boards">
               {data?.map((board) => (
                 <Board
+                    setData={setData}
                   boards={data}
                   key={board._id}
                   id={board._id}

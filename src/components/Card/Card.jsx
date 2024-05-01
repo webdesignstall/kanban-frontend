@@ -18,6 +18,7 @@ const Card = (props) => {
         <>
           {modalShow && (
             <CardDetails
+                setData={props?.setData}
               cardId={props?.id}
               cardName={props?.title}
               boards={props?.boards}
