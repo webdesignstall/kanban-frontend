@@ -5,9 +5,14 @@ import { MoreHorizontal } from "react-feather";
 import Editable from "../Editable/Editable";
 import Dropdown from "../Dropdown/Dropdown";
 import { Droppable } from "react-beautiful-dnd";
-export default function Board(props) {
+import { Button, Input } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+
+const Board = (props) => {
   const [dropdown, setDropdown] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState("");
+  const [isCreateTask, setIsCreateTask] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
 
   useEffect(() => {
     document.addEventListener("keypress", (e) => {
@@ -26,8 +31,12 @@ export default function Board(props) {
     };
   });
 
+  const addNewTask = () => {
+    console.log(newTaskTitle);
+    setIsCreateTask(false);
+  };
   return (
-    <div style={{ marginBottom: "20px" }} className="board">
+    <div className="board">
       <div className="board__top">
         {props.show && props.id === selectedColumn ? (
           <div>
@@ -68,7 +77,7 @@ export default function Board(props) {
                 setDropdown(false);
               }}
             >
-              <p onClick={() => props.removeBoard(props.id)}>Delete Board</p>
+              <p onClick={() => props.removeColumn(props.id)}>Delete Column</p>
             </Dropdown>
           )}
         </div>
@@ -97,14 +106,45 @@ export default function Board(props) {
           </div>
         )}
       </Droppable>
-      <div className="board__footer">
+      {/* <div className="board__footer">
         <Editable
-          name={"Add Card"}
-          btnName={"Add Card"}
-          placeholder={"Enter Card Title"}
+          name={"Add Task"}
+          btnName={"Add Task"}
+          placeholder={"Enter Title"}
           onSubmit={(value) => props.addCard(value, props.id)}
         />
+      </div> */}
+      <div>
+        {isCreateTask ? (
+          <div style={{ padding: "0px 20px" }}>
+            <p>
+              <Input
+                autoFocus
+                onBlur={(e) => setNewTaskTitle(e.target.value)}
+                placeholder="Enter task name"
+              />
+            </p>
+            <Button
+              onClick={() => setIsCreateTask(false)}
+              style={{ marginRight: "5px" }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={addNewTask} type="primary">
+              Create
+            </Button>
+          </div>
+        ) : (
+          <Button
+            style={{ marginLeft: "7px" }}
+            onClick={() => setIsCreateTask(true)}
+          >
+            <PlusOutlined /> <span>Add Task</span>
+          </Button>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default Board;
