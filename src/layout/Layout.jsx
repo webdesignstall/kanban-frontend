@@ -128,6 +128,7 @@ const DashboardLayout = () => {
         <Content
           style={{
             margin: "0 16px",
+            backgroundColor: "white",
           }}
         >
           <AllBoards selectedItem={selectedIKey} />

@@ -5,4 +5,7 @@ export const AxiosInstance = axios.create({
   headers: {
     Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
   },
+  // headers: {
+  //   Authorization: `Bearer ${getToken()}`,
+  // },
 });
