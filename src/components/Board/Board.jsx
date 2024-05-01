@@ -7,6 +7,7 @@ import Dropdown from "../Dropdown/Dropdown";
 import { Droppable } from "react-beautiful-dnd";
 import { Button, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { createColumn } from "../../APIs/ColumnAPIs";
 
 const Board = (props) => {
   const [dropdown, setDropdown] = useState(false);
@@ -31,9 +32,19 @@ const Board = (props) => {
     };
   });
 
-  const addNewTask = () => {
-    console.log(newTaskTitle);
-    setIsCreateTask(false);
+  const addNewTask = async () => {
+    const newTaskData = {
+      title: newTaskTitle,
+      labels: [],
+      subTasks: [],
+    };
+    const column = props.boards.find((board) => board._id === props.id);
+    const updatedColumn = { ...column, tasks: [...column.tasks, newTaskData] };
+    const result = await createColumn(updatedColumn);
+    if (result?.status === "success") {
+      setIsCreateTask(false);
+      props.setRefetchColumn((prev) => !prev);
+    }
   };
   return (
     <div className="board">

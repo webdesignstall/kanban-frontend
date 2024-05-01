@@ -248,6 +248,7 @@ const AllBoards = ({ selectedItem }) => {
                   removeColumn={removeColumn}
                   show={isEditTitle}
                   setShow={setIsEditTitle}
+                  setRefetchColumn={setRefetchColumn}
                 />
               ))}
               <div
