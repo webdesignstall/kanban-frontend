@@ -12,7 +12,7 @@ export default function Navbar(props) {
           style={{ transition: "all 200ms" }}
           onChange={props.switchTheme}
         />
-        <label for="checkbox" class="label">
+        <label htmlFor="checkbox" className="label">
           <i className="fas fa-moon fa-sm"></i>
           <i className="fas fa-sun fa-sm"></i>
           <div className="ball" />

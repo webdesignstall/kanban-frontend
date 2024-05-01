@@ -11,6 +11,7 @@ const DashboardLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIKey, setSelectedKey] = useState("");
   const [boardsData, setBoardsData] = useState([]);
+  const [refetchBoard, setRefetchBoard] = useState(false);
 
   const handleMenuItemClick = (item) => {
     setSelectedKey(item.key);
@@ -38,10 +39,9 @@ const DashboardLayout = () => {
         icon: <AppstoreOutlined />,
       }));
       setSelectedKey(data?.data[0]?._id);
-      console.log(data?.data[0]?._id);
       setBoardsData(updatedItems);
     })();
-  }, []);
+  }, [refetchBoard]);
 
   return (
     <Layout
@@ -56,15 +56,53 @@ const DashboardLayout = () => {
         // style={{ padding: "5px" }}
       >
         <div className="demo-logo-vertical" />
-        <h3 style={{ color: "white", textAlign: "center", marginTop: "10px" }}>
-          All Boards
-        </h3>
+        {collapse ? (
+          <h4
+            style={{
+              color: "white",
+              textAlign: "center",
+              marginTop: "10px",
+              fontFamily: "sans-serif",
+              fontSize: "15px",
+            }}
+          >
+            BOARDS
+          </h4>
+        ) : (
+          <h4
+            style={{
+              color: "white",
+              textAlign: "center",
+              marginTop: "10px",
+              fontFamily: "sans-serif",
+              fontSize: "25px",
+            }}
+          >
+            ALL BOARDS
+          </h4>
+        )}
+
         <Menu
           style={{ padding: "5px" }}
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[selectedIKey]}
           mode="inline"
-          items={boardsData}
+          items={
+            collapse
+              ? boardsData?.concat({
+                  label: "Add",
+                  key: boardsData?.length + 1,
+                  icon: (
+                    <PlusOutlined
+                      onClick={() => setIsModalOpen(true)}
+                      style={{
+                        color: "white",
+                      }}
+                    />
+                  ),
+                })
+              : boardsData
+          }
           onClick={handleMenuItemClick}
           selectedKeys={[selectedIKey]}
         />
@@ -97,6 +135,7 @@ const DashboardLayout = () => {
             <AddBoardModal
               isModalOpen={isModalOpen}
               setIsModalOpen={setIsModalOpen}
+              setRefetchBoard={setRefetchBoard}
             />
           )}
         </Content>

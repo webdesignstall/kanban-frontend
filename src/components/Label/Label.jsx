@@ -9,7 +9,7 @@ export default function (props) {
   const [label, setLabel] = useState("");
 
   const isColorUsed = (color) => {
-    const isFound = props.tags.find((item) => item.color === color);
+    const isFound = props?.labels?.find((item) => item?.color === color);
 
     return isFound ? true : false;
   };
@@ -64,7 +64,7 @@ export default function (props) {
               Select color
             </p>
             <div className="d-flex justify-content-between color__palette flex-wrap mb-2">
-              {props.color?.map((item, index) => (
+              {props?.color?.map((item, index) => (
                 <span
                   onClick={() => setSelectedColor(item)}
                   key={index}
@@ -83,7 +83,7 @@ export default function (props) {
                     if (selectedColor === "") {
                       alert("Please select color for label.");
                     }
-                    props.addTag(label, selectedColor);
+                    props.addNewLabel(label, selectedColor);
                     setSelectedColor("");
                     setLabel("");
                     input.current.value = "";
