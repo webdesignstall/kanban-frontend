@@ -10,12 +10,10 @@ const Card = (props) => {
   const [dropdown, setDropdown] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
+  console.log("From Card ", props);
+
   return (
-    <Draggable
-      key={props.id.toString()}
-      draggableId={props.id.toString()}
-      index={props.index}
-    >
+    <Draggable key={props.id} draggableId={props.id} index={props.index}>
       {(provided) => (
         <>
           {modalShow && (
@@ -58,16 +56,16 @@ const Card = (props) => {
                 <Clock />
                 <span>Sun 12:30</span>
               </div> */}
-              {props.card.task.length !== 0 && (
+              {props.card?.subTasks?.length !== 0 && (
                 <div className="task">
                   <CheckSquare />
                   <span>
-                    {props.card.task.length !== 0
+                    {props.card.subTasks?.length !== 0
                       ? `${
-                          (props.card.task?.filter(
+                          props.card?.subTasks?.filter(
                             (item) => item.completed === true
-                          )).length
-                        } / ${props.card.task.length}`
+                          )?.length
+                        } / ${props.card?.subTasks?.length}`
                       : `${"0/0"}`}
                   </span>
                 </div>

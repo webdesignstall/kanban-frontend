@@ -9,6 +9,8 @@ export default function Board(props) {
   const [show, setShow] = useState(false);
   const [dropdown, setDropdown] = useState(false);
 
+  console.log(props);
+
   useEffect(() => {
     document.addEventListener("keypress", (e) => {
       if (e.code === "Enter") setShow(false);
@@ -21,7 +23,7 @@ export default function Board(props) {
   });
 
   return (
-    <div className="board">
+    <div style={{ marginBottom: "20px" }} className="board">
       <div className="board__top">
         {show ? (
           <div>
@@ -65,21 +67,21 @@ export default function Board(props) {
           )}
         </div>
       </div>
-      <Droppable droppableId={props.id.toString()}>
+      <Droppable droppableId={props.id}>
         {(provided) => (
           <div
             className="board__cards"
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
-            {props.card?.map((items, index) => (
+            {props?.card?.map((items, index) => (
               <Card
-                bid={props.id}
-                id={items.id}
+                bid={props._id}
+                id={items._id}
                 index={index}
-                key={items.id}
-                title={items.title}
-                tags={items.tags}
+                key={items._id}
+                title={items?.title}
+                tags={items?.tags}
                 updateCard={props.updateCard}
                 removeCard={props.removeCard}
                 card={items}

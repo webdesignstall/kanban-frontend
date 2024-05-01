@@ -1,13 +1,37 @@
 import React, { useState } from "react";
 import { Modal, Input, Button, Space } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { createBoard } from "../../APIs/BoardAPIs";
+import { createColumn } from "../../APIs/ColumnAPIs";
 
 const AddBoardModal = ({ isModalOpen, setIsModalOpen }) => {
   const [boardName, setBoardName] = useState("");
   const [columns, setColumns] = useState(["Todo", "In Progress"]);
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const userId = "66307f052a62c8119ee36db3";
+  // const boardId = "6630884c6e28d468972769a5";
+
+  const handleOk = async () => {
+    const newBoardData = {
+      boardName,
+      userId,
+    };
+    // create board
+    const result = await createBoard(newBoardData);
+    if (result?.status === "success") {
+      setIsModalOpen(false);
+      // const boardId = result.data._id;
+      // after creating board successfully
+      // then, create columns
+      // const columnData = columns.map((col) => ({
+      //   boardId,
+      //   userId,
+      //   columnName: col,
+      // }));
+
+      // const result2 = await createColumn(columnData);
+      // console.log(result2);
+    }
   };
 
   const handleCancel = () => {
@@ -55,7 +79,7 @@ const AddBoardModal = ({ isModalOpen, setIsModalOpen }) => {
             justifyContent: "flex-start",
           }}
         >
-          {columns.map((column, index) => (
+          {columns?.map((column, index) => (
             <Space
               key={index}
               style={{

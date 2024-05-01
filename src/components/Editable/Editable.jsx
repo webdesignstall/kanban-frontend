@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Plus, X } from "react-feather";
 import "./Editable.css";
+import { Input, Button } from "antd";
 
 const Editable = (props) => {
   const [show, setShow] = useState(props?.handler || false);
@@ -19,15 +20,25 @@ const Editable = (props) => {
     <div className={`editable ${props.parentClass}`}>
       {show ? (
         <form onSubmit={handleOnSubmit}>
-          <div className={`editable__input ${props.class}`}>
-            <textarea
+          <div
+            style={{ width: "100%" }}
+            className={`editable__input ${props.class}`}
+          >
+            {/* <textarea
               placeholder={props.placeholder}
               autoFocus
               id={"edit-input"}
               type={"text"}
               onChange={(e) => setText(e.target.value)}
+            /> */}
+            <Input
+              style={{ width: "100%", padding: "10px", marginTop: "10px" }}
+              autoFocus
+              placeholder="Enter name"
+              onChange={(e) => setText(e.target.value)}
             />
             <div className="btn__control">
+              {/* <Button type="submit">{`${props.btnName}` || "Add"} </Button> */}
               <button className="add__btn" type="submit">
                 {`${props.btnName}` || "Add"}
               </button>
@@ -43,6 +54,7 @@ const Editable = (props) => {
         </form>
       ) : (
         <p
+          // style={{ width: "150px", backgroundColor: "gray", color: "white" }}
           onClick={() => {
             setShow(true);
           }}
