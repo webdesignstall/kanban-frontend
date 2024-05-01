@@ -2,6 +2,7 @@ import { AxiosInstance } from "./axiosInstance";
 
 export const createColumn = async (column) => {
   try {
+    // debugger
     const { data } = await AxiosInstance.post("/columns", column);
     return data;
   } catch (error) {

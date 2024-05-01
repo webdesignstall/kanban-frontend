@@ -18,6 +18,10 @@ const Card = (props) => {
         <>
           {modalShow && (
             <CardDetails
+              cardId={props?.id}
+              cardName={props?.title}
+              boards={props?.boards}
+              columnName={props?.columnName}
               updateCard={props.updateCard}
               onClose={setModalShow}
               card={props.card}
