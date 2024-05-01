@@ -19,39 +19,39 @@ export default function CardDetails(props) {
   const [selectedDate, setSelectedDate] = useState("");
 
   // Function to add task
-  const addTask = (value) => {
-    values.task.push({
-      id: uuidv4(),
-      task: value,
-      completed: false,
-    });
-    setValues({ ...values });
+  const addSubTask = (value) => {
+    console.log({ subtask: value });
+    // call the subtask api
   };
 
   // Function to remove task
   const removeTask = (id) => {
-    const remainingTask = values.task.filter((item) => item.id !== id);
-    setValues({ ...values, task: remainingTask });
+    console.log({ subtaskId: id });
+    // const remainingTask = values.subTasks?.filter((item) => item._id !== id);
+    // setValues({ ...values, task: remainingTask });
   };
 
   // Function to delete all tasks
   const deleteAllTask = () => {
-    setValues({
-      ...values,
-      task: [],
-    });
+    // remove all subtask by parent task id
+    console.log({ AllTaskByTaskId: props.card._id });
+    // setValues({
+    //   ...values,
+    //   task: [],
+    // });
   };
 
   // Function to update task completion status
   const updateTask = (id) => {
-    const taskIndex = values.task.findIndex((item) => item.id === id);
-    values.task[taskIndex].completed = !values.task[taskIndex].completed;
+    const taskIndex = values.subTasks.findIndex((item) => item.id === id);
+    values.subTasks[taskIndex].completed =
+      !values.subTasks[taskIndex].completed;
     setValues({ ...values });
   };
 
   // Function to remove tag
   const removeTag = (id) => {
-    const tempTag = values.tags.filter((item) => item.id !== id);
+    const tempTag = values.tags?.filter((item) => item.id !== id);
     setValues({
       ...values,
       tags: tempTag,
@@ -76,10 +76,10 @@ export default function CardDetails(props) {
 
   // Function to calculate completion percentage
   const calculatePercent = () => {
-    const totalTask = values.task.length;
-    const completedTask = values.task.filter(
+    const totalTask = values.subTasks?.length;
+    const completedTask = values.subTasks?.filter(
       (item) => item.completed === true
-    ).length;
+    )?.length;
 
     return Math.floor((completedTask * 100) / totalTask) || 0;
   };
@@ -145,13 +145,13 @@ export default function CardDetails(props) {
                 className="d-flex label__color flex-wrap"
                 style={{ width: "500px", paddingRight: "10px" }}
               >
-                {values.tags.length !== 0 ? (
-                  values.tags.map((item) => (
+                {values.tags?.length !== 0 ? (
+                  values.tags?.map((item) => (
                     <span
                       className="d-flex justify-content-between align-items-center gap-2"
                       style={{ backgroundColor: item.color }}
                     >
-                      {item.tagName.length > 10
+                      {item.tagName?.length > 10
                         ? item.tagName.slice(0, 6) + "..."
                         : item.tagName}
                       <X
@@ -197,8 +197,8 @@ export default function CardDetails(props) {
                   </div>
                 </div>
                 <div className="my-2">
-                  {values.task.length !== 0 ? (
-                    values.task.map((item, index) => (
+                  {values.subTasks?.length !== 0 ? (
+                    values.subTasks?.map((item, index) => (
                       <div className="task__list d-flex align-items-start gap-2">
                         <input
                           className="task__checkbox"
@@ -213,11 +213,11 @@ export default function CardDetails(props) {
                             item.completed === true ? "strike-through" : ""
                           }`}
                         >
-                          {item.task}
+                          {item.title}
                         </h6>
                         <Trash
                           onClick={() => {
-                            removeTask(item.id);
+                            removeTask(item._id);
                           }}
                           style={{
                             cursor: "pointer",
@@ -234,7 +234,7 @@ export default function CardDetails(props) {
                     parentClass={"task__editable"}
                     name={"Add Task"}
                     btnName={"Add task"}
-                    onSubmit={addTask}
+                    onSubmit={addSubTask}
                   />
                 </div>
               </div>

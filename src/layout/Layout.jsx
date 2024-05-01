@@ -1,47 +1,44 @@
 import React, { useEffect, useState } from "react";
 import { AppstoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu } from "antd";
 import AllBoards from "../components/AllBoard/AllBoards";
 import AddBoardModal from "../components/AddBoardModal/AddBoardModal";
-const { Header, Content, Footer, Sider } = Layout;
+import { getAllBoards } from "../APIs/BoardAPIs";
+const { Content, Sider } = Layout;
 
 const DashboardLayout = () => {
   const [collapse, setCollapse] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedIKey, setSelectedKey] = useState("1");
+  const [selectedIKey, setSelectedKey] = useState("");
   const [boardsData, setBoardsData] = useState([]);
-
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
 
   const handleMenuItemClick = (item) => {
     setSelectedKey(item.key);
   };
 
-  function getItem(label, key, icon, children) {
-    return {
-      key,
-      icon,
-      label,
-      children,
-    };
-  }
-
-  const items = [
-    getItem("Board 1", "1", <AppstoreOutlined />),
-    getItem("Board 2", "2", <AppstoreOutlined />),
-  ];
+  // useEffect(() => {
+  //   (async () => {
+  //     const res = await fetch("./boards.json");
+  //     const data = await res.json();
+  //     const updatedItems = data.map((item) => ({
+  //       label: item.name,
+  //       key: item.id,
+  //       icon: <AppstoreOutlined />,
+  //     }));
+  //     setBoardsData(updatedItems);
+  //   })();
+  // }, []);
 
   useEffect(() => {
     (async () => {
-      const res = await fetch("./boards.json");
-      const data = await res.json();
-      const updatedItems = data.map((item) => ({
-        label: item.name,
-        key: item.id,
+      const data = await getAllBoards();
+      const updatedItems = data?.data?.map((item) => ({
+        label: item.boardName,
+        key: item._id,
         icon: <AppstoreOutlined />,
       }));
+      setSelectedKey(data?.data[0]?._id);
+      console.log(data?.data[0]?._id);
       setBoardsData(updatedItems);
     })();
   }, []);
@@ -56,10 +53,14 @@ const DashboardLayout = () => {
         collapsible
         collapsed={collapse}
         onCollapse={(value) => setCollapse(value)}
+        // style={{ padding: "5px" }}
       >
         <div className="demo-logo-vertical" />
-        <h3 style={{ color: "white", textAlign: "center" }}>All Boards</h3>
+        <h3 style={{ color: "white", textAlign: "center", marginTop: "10px" }}>
+          All Boards
+        </h3>
         <Menu
+          style={{ padding: "5px" }}
           theme="dark"
           defaultSelectedKeys={["1"]}
           mode="inline"
@@ -67,13 +68,17 @@ const DashboardLayout = () => {
           onClick={handleMenuItemClick}
           selectedKeys={[selectedIKey]}
         />
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          type="primary"
-          style={{ width: "100%" }}
-        >
-          <PlusOutlined /> Add New Board
-        </Button>
+        {collapse ? (
+          <PlusOutlined />
+        ) : (
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            type="primary"
+            style={{ width: "95%", margin: "5px" }}
+          >
+            <PlusOutlined /> Add New Board
+          </Button>
+        )}
       </Sider>
       <Layout>
         {/* <Header
@@ -95,13 +100,13 @@ const DashboardLayout = () => {
             />
           )}
         </Content>
-        <Footer
+        {/* <Footer
           style={{
             textAlign: "center",
           }}
         >
           Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        </Footer>
+        </Footer> */}
       </Layout>
     </Layout>
   );
