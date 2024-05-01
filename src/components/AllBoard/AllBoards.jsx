@@ -121,13 +121,39 @@ const AllBoards = ({ selectedItem }) => {
     // Body: { sourceIndex, destinationIndex }
   };
 
-  const addCard = (title, bid) => {
-    const newCard = {
+  const addCard = async (title, bid) => {
+
+ /*   const newCard = {
       title,
       serialNo: 4, // how to catch the serial number or input it
       columnId: bid,
     };
-    console.log(newCard);
+    console.log(newCard);*/
+
+
+    const searchColumn = data?.find(item => item?.columnName === bid);
+
+
+    const newCard = {
+      title
+    };
+
+    const newTask = {...searchColumn, tasks: [...searchColumn?.tasks, {title}] };
+  /*  debugger
+    console.log(newTask);
+    debugger*/
+
+    const result = await createColumn(newTask);
+    if (result?.status === "success") {
+      setRefetchColumn((prev) => !prev);
+      console.log(result);
+    } else {
+      console.log(result);
+    }
+
+
+    // const result = await createColumn(newTask);
+
     // updateData(
     //   data?.map((board) =>
     //     board.id === bid
@@ -159,12 +185,19 @@ const AllBoards = ({ selectedItem }) => {
   };
 
   const addNewColumn = async (title) => {
-    const newData = {
+    /*const newData = {
       columnName: title,
       boardId: selectedItem,
       tasks: [],
-    };
-    const result = await createColumn(newData);
+    };*/
+
+   /* debugger
+
+    console.log();
+
+    debugger*/
+
+    const result = await createColumn({...data, columnName: title, boardId: selectedItem});
     if (result?.status === "success") {
       setRefetchColumn((prev) => !prev);
       console.log(result);
@@ -206,6 +239,7 @@ const AllBoards = ({ selectedItem }) => {
             <div className="app_boards">
               {data?.map((board) => (
                 <Board
+                  boards={data}
                   key={board._id}
                   id={board._id}
                   name={board.columnName}

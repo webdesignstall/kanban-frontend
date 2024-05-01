@@ -82,6 +82,8 @@ export default function Board(props) {
           >
             {props?.card?.map((items, index) => (
               <Card
+                boards={props?.boards}
+                columnName={props?.name}
                 bid={props._id}
                 id={items._id}
                 index={index}
@@ -102,7 +104,7 @@ export default function Board(props) {
           name={"Add Card"}
           btnName={"Add Card"}
           placeholder={"Enter Card Title"}
-          onSubmit={(value) => props.addCard(value, props.id)}
+          onSubmit={(value) => props.addCard(value, props.name)}
         />
       </div>
     </div>
