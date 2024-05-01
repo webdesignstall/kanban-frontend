@@ -199,11 +199,12 @@ const AllBoards = ({ selectedItem }) => {
 
     debugger*/
 
-    const result = await createColumn({
-      ...data,
-      columnName: title,
-      boardId: selectedItem,
-    });
+    // const result = await createColumn({
+    //   ...data,
+    //   columnName: title,
+    //   boardId: selectedItem,
+    // });
+    const result = await createColumn(newData);
     if (result?.status === "success") {
       setRefetchColumn((prev) => !prev);
       setIsCreateColumn(false);
