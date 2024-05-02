@@ -3,7 +3,11 @@ import { DragDropContext } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import Board from "../Board/Board";
 import Editable from "../Editable/Editable";
-import { createColumn, getColumnsByBoardId } from "../../APIs/ColumnAPIs";
+import {
+  createColumn,
+  getColumnsByBoardId,
+  organizeDragAndDrop,
+} from "../../APIs/ColumnAPIs";
 import { Button, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
@@ -13,23 +17,6 @@ const AllBoards = ({ selectedItem }) => {
   const [isEditTitle, setIsEditTitle] = useState(false);
   const [isCreateColumn, setIsCreateColumn] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
-
-  // useEffect(() => {
-  //   const fetchColumnData = async () => {
-  //     try {
-  //       const res = await fetch("./columns.json");
-  //       const columnsData = await res.json();
-  //       const selectedBoard = columnsData.find(
-  //         (item) => item.boardId === Number(selectedItem)
-  //       );
-  //       setData(selectedBoard?.columns || []);
-  //     } catch (error) {
-  //       console.error("Error fetching column data: ", error);
-  //     }
-  //   };
-
-  //   fetchColumnData();
-  // }, [selectedItem]);
 
   useEffect(() => {
     const fetchColumnData = async () => {
@@ -49,71 +36,11 @@ const AllBoards = ({ selectedItem }) => {
 
   const updateData = (newData) => {
     setData(newData);
-    // Example API call to update data
-    // POST request to update board columns
-    // Params: boardId (or selectedItem), newData
-    // Body: newData
   };
 
   const updateColumnName = (title, bid) => {
     console.log(title, bid);
     setIsEditTitle(false);
-  };
-
-  // const dragCardInBoard = (source, destination) => {
-  //   const newData = [...data];
-  //   const sourceBoard = newData.find(
-  //     (board) => board.id === source.droppableId
-  //   );
-  //   const destinationBoard = newData.find(
-  //     (board) => board.id === destination.droppableId
-  //   );
-  //   const sourceIndex = sourceBoard.card.findIndex(
-  //     (card) => card.id === source.draggableId
-  //   );
-  //   const [draggedCard] = sourceBoard.card.splice(sourceIndex, 1);
-  //   const destinationIndex = destination.index;
-  //   destinationBoard.card.splice(destinationIndex, 0, draggedCard);
-  //   updateData(newData);
-  //   // Example API call to update card position
-  //   // POST request to update card position
-  //   // Params: sourceBoardId, destinationBoardId, sourceIndex, destinationIndex
-  //   // Body: { sourceIndex, destinationIndex }
-  // };
-
-  const dragCardInBoard = (source, destination) => {
-    const newData = [...data];
-    const sourceColumn = newData.find(
-      (board) => board.id === source.droppableId
-    );
-    const destinationColumn = newData.find(
-      (board) => board.id === destination.droppableId
-    );
-
-    if (!sourceColumn || !destinationColumn) {
-      console.error("Source or destination column not found.");
-      return;
-    }
-
-    const sourceCardIndex = sourceColumn.card.findIndex(
-      (card) => card.id === source.draggableId
-    );
-    const [draggedCard] = sourceColumn.card.splice(sourceCardIndex, 1);
-    const destinationIndex = destination.index;
-
-    if (source.droppableId !== destination.droppableId) {
-      // If source and destination columns are different
-      destinationColumn.card.splice(destinationIndex, 0, draggedCard);
-    } else {
-      // If source and destination columns are the same
-      sourceColumn.card.splice(destinationIndex, 0, draggedCard);
-    }
-
-    updateData(newData);
-    // Example API call to update card position
-    // POST request to update card position
-    // Params: sourceColumnId, destinationColumnId, sourceIndex, destinationIndex
-    // Body: { sourceIndex, destinationIndex }
   };
 
   const addCard = async (title, bid) => {
@@ -225,9 +152,59 @@ const AllBoards = ({ selectedItem }) => {
 
   const onDragEnd = (result) => {
     const { source, destination } = result;
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId) return;
-    dragCardInBoard(source, destination);
+
+    // If there's no destination or the source and destination are the same, do nothing
+    if (!destination || source.droppableId === destination.droppableId) {
+      return;
+    }
+
+    // Find the source and destination columns
+    const sourceColumn = data?.find(
+      (board) => board?._id === source.droppableId
+    );
+    const destinationColumn = data?.find(
+      (board) => board?._id === destination.droppableId
+    );
+
+    // Find the dragged card
+    const draggedCard = sourceColumn.tasks?.find(
+      (card) => card._id === result.draggableId
+    );
+
+    sourceColumn.card = sourceColumn?.tasks?.filter(
+      (card) => card._id !== result.draggableId
+    );
+
+    destinationColumn.tasks?.splice(destination.index, 0, draggedCard);
+
+    const newData = data?.map((board) => {
+      if (board._id === sourceColumn._id) {
+        return sourceColumn;
+      }
+      if (board._id === destinationColumn._id) {
+        return destinationColumn;
+      }
+      return board;
+    });
+
+    // update the current state
+    setData(newData);
+    // call api to make changes on db as frontend
+
+    const payload = {
+      rePlacableTaskId: draggedCard._id,
+      serialNo: source.index,
+      sourceColumnId: source.droppableId,
+      destinationColumnId: destination.droppableId,
+    };
+    handleDragAndDrop(payload);
+  };
+
+  const handleDragAndDrop = async (payload) => {
+    const result = await organizeDragAndDrop(payload);
+    if (result?.status) {
+      setRefetchColumn((prev) => !prev);
+    }
   };
 
   return (
@@ -238,7 +215,7 @@ const AllBoards = ({ selectedItem }) => {
             <div style={{ height: "100vh" }} className="app_boards">
               {data?.map((board) => (
                 <Board
-                    setData={setData}
+                  setData={setData}
                   boards={data}
                   key={board._id}
                   id={board._id}
@@ -292,13 +269,6 @@ const AllBoards = ({ selectedItem }) => {
                   </p>
                 )}
               </div>
-              {/* <Editable
-                className={"add__board"}
-                name={"New Column"}
-                btnName={"New Column"}
-                onSubmit={addNewColumn}
-                placeholder={"Enter column name"}
-              /> */}
             </div>
           </div>
         </div>
