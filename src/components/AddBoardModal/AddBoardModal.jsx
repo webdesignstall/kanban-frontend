@@ -71,7 +71,7 @@ const AddBoardModal = ({ isModalOpen, setIsModalOpen, setRefetchBoard }) => {
           onChange={(e) => setBoardName(e.target.value)}
           style={{ marginBottom: "1rem" }}
         />
-        <h6>Board columns</h6>
+        {/*<h6>Board columns</h6>
         <div
           style={{
             marginBottom: "0.5rem",
@@ -102,7 +102,7 @@ const AddBoardModal = ({ isModalOpen, setIsModalOpen, setRefetchBoard }) => {
         </div>
         <Button onClick={handleAddColumn} style={{ marginTop: "10px" }}>
           Add New Column
-        </Button>
+        </Button>*/}
       </Modal>
     </>
   );
