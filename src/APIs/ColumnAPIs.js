@@ -39,3 +39,12 @@ export const deleteColumn = async (columnId) => {
     console.log(error);
   }
 };
+
+export const organizeDragAndDrop = async (payload) => {
+  try {
+    const { data } = await AxiosInstance.post("/columns/drag-drop", payload);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

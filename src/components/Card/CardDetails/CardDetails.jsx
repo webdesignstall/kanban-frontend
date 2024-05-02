@@ -392,7 +392,6 @@ export default function CardDetails(props) {
     const searchColumn = props?.boards?.find(
       (item) => item?.columnName === props?.columnName
     );
-    console.log(searchColumn);
     const task = searchColumn?.tasks?.find(
       (task) => task?._id === props?.cardId
     );
@@ -404,7 +403,6 @@ export default function CardDetails(props) {
       ...searchColumn,
       tasks: [...remainingTask, updatedTask],
     };
-    console.log(updatedColumn);
     const result = await createColumn(updatedColumn);
     if (result?.status === "success") {
       setInput(false);
@@ -491,7 +489,7 @@ export default function CardDetails(props) {
                 <CreditCard className="icon__md" />
                 {input ? (
                   <Input
-                    onBlur={handleUpdateTaskTitle}
+                    onBlur={(e) => handleUpdateTaskTitle(e.target.value)}
                     defaultValue={values.title}
                     onChange={(e) => setText(e.target.value)}
                   />

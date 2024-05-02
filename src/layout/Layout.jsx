@@ -43,6 +43,8 @@ const DashboardLayout = () => {
     })();
   }, [refetchBoard]);
 
+  // configure functionality to delete board from sidebar
+
   return (
     <Layout
       style={{
