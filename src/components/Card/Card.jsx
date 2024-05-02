@@ -10,15 +10,13 @@ const Card = (props) => {
   const [dropdown, setDropdown] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
-  console.log("From Card ", props);
-
   return (
     <Draggable key={props.id} draggableId={props.id} index={props.index}>
       {(provided) => (
         <>
           {modalShow && (
             <CardDetails
-                setData={props?.setData}
+              setData={props?.setData}
               cardId={props?.id}
               cardName={props?.title}
               boards={props?.boards}
