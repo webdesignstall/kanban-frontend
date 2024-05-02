@@ -18,3 +18,24 @@ export const getColumnsByBoardId = async (boardId) => {
     console.log(error);
   }
 };
+
+export const updateColumnName = async (columnId, updatedData) => {
+  try {
+    const { data } = await AxiosInstance.patch(
+      `/columns/${columnId}`,
+      updatedData
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteColumn = async (columnId) => {
+  try {
+    const { data } = await AxiosInstance.delete(`/columns/${columnId}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

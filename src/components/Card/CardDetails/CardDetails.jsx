@@ -6,7 +6,7 @@ import Editable from "../../Editable/Editable";
 import Modal from "../../Modal/Modal";
 import "./CardDetails.css";
 import Label from "../../Label/Label";
-import {createColumn, getColumnsByBoardId} from "../../../APIs/ColumnAPIs";
+import { createColumn, getColumnsByBoardId } from "../../../APIs/ColumnAPIs";
 import { PlusOutlined } from "@ant-design/icons";
 
 const colors = ["#61bd4f", "#f2d600", "#ff9f1a", "#eb5a46", "#c377e0"];
@@ -20,9 +20,7 @@ export default function CardDetails(props) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
 
   // Function to add task
-  const addSubTask = async (value) => {
-
-
+  const addSubTask = async () => {
     /*
     const searchColumn = props?.boards?.find(item => item?.columnName === props?.columnName);
 
@@ -84,26 +82,23 @@ export default function CardDetails(props) {
       const result = await createColumn(updatedColumn);
 
       // const subTaskIndex = updatedTasks?.subTasks?.findIndex((item) => item._id === id);
-/*
+      /*
       const currentColumn = result?.data?.find(
           (item) => item?.columnName === props?.columnName
       );*/
       // debugger
 
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
 
-      const currentCard = result?.data?.tasks?.find(item => item?._id === props?.cardId);
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
 
+      props.setData(boardData?.data);
 
+      setValues({ ...currentCard });
 
-      const boardData = await getColumnsByBoardId(searchColumn?.boardId)
-
-
-
-      props.setData(boardData?.data)
-
-      setValues({...currentCard});
-
-      setIsCreateSubTask(false)
+      setIsCreateSubTask(false);
       if (result?.status === "success") {
         // setRefetchColumn((prev) => !prev);
         console.log(result);
@@ -125,15 +120,14 @@ export default function CardDetails(props) {
     // const remainingTask = values.subTasks?.filter((item) => item._id !== id);
     // setValues({ ...values, task: remainingTask });
 
-
     // Find the column containing the task
     const searchColumn = props?.boards?.find(
-        (item) => item?.columnName === props?.columnName
+      (item) => item?.columnName === props?.columnName
     );
 
     // Find the task within the column
     const task = searchColumn?.tasks?.find(
-        (task) => task?._id === props?.cardId
+      (task) => task?._id === props?.cardId
     );
 
     if (task) {
@@ -142,13 +136,12 @@ export default function CardDetails(props) {
 
       if (subTaskIndex !== -1) {
         // Update the completion status of the subtask
-       /* task.subTasks[subTaskIndex].completed =
+        /* task.subTasks[subTaskIndex].completed =
             !task.subTasks[subTaskIndex].completed;*/
 
         task.subTasks.splice(subTaskIndex, 1);
 
-
-        console.log({ ...task })
+        console.log({ ...task });
 
         setValues({ ...task });
 
@@ -180,8 +173,6 @@ export default function CardDetails(props) {
     } else {
       console.log("Task not found.");
     }
-
-
   };
 
   // Function to delete all tasks
@@ -195,21 +186,20 @@ export default function CardDetails(props) {
 
     // Find the column containing the task
     const searchColumn = props?.boards?.find(
-        (item) => item?.columnName === props?.columnName
+      (item) => item?.columnName === props?.columnName
     );
 
     // Find the task within the column
     const task = searchColumn?.tasks?.find(
-        (task) => task?._id === props?.cardId
+      (task) => task?._id === props?.cardId
     );
 
-    task.subTasks = []
+    task.subTasks = [];
 
     setValues({
       ...task,
       task: [],
     });
-
 
     // Update the task within the column
     const updatedTasks = searchColumn.tasks.map((t) => {
@@ -226,7 +216,6 @@ export default function CardDetails(props) {
 
     // Save the updated column
     const result = await createColumn(updatedColumn);
-
   };
 
   // Function to update task completion status
@@ -255,6 +244,30 @@ export default function CardDetails(props) {
 
   };*/
 
+  const handleDeleteTaskCard = async () => {
+    const searchColumn = props?.boards?.find(
+      (item) => item?.columnName === props?.columnName
+    );
+
+    const remainingTask = searchColumn.tasks.filter(
+      (task) => task._id !== props?.cardId
+    );
+    const updatedColumn = {
+      ...searchColumn,
+      tasks: [...remainingTask],
+    };
+    const result = await createColumn(updatedColumn);
+    if (result.status === "success") {
+      setInput(false);
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
+      props.setData(boardData?.data);
+      setValues({ ...currentCard });
+    }
+  };
+
   const updateSubTask = async (id) => {
     // Find the column containing the task
     const searchColumn = props?.boards?.find(
@@ -275,8 +288,7 @@ export default function CardDetails(props) {
         task.subTasks[subTaskIndex].completed =
           !task.subTasks[subTaskIndex].completed;
 
-
-        console.log({ ...task })
+        console.log({ ...task });
 
         setValues({ ...task });
 
@@ -310,41 +322,101 @@ export default function CardDetails(props) {
     }
   };
 
-  // Function to remove tag
-  const removeLabel = (id) => {
-    // call api to remove label
-    console.log("Remove label", id);
-    // const tempTag = values.tags?.filter((item) => item.id !== id);
-    // setValues({
-    //   ...values,
-    //   tags: tempTag,
-    // });
+  const removeLabel = async (labelId) => {
+    const searchColumn = props?.boards?.find(
+      (item) => item?.columnName === props?.columnName
+    );
+    const task = searchColumn?.tasks?.find(
+      (task) => task?._id === props?.cardId
+    );
+    const remainingTask = searchColumn.tasks.filter(
+      (task) => task._id !== props?.cardId
+    );
+    const remainingLabels = task.labels.filter(
+      (label) => label._id !== labelId
+    );
+    const updatedColumn = {
+      ...searchColumn,
+      tasks: [...remainingTask, { ...task, labels: [...remainingLabels] }],
+    };
+    const result = await createColumn(updatedColumn);
+    if (result?.status === "success") {
+      setInput(false);
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
+      props.setData(boardData?.data);
+      setValues({ ...currentCard });
+    }
   };
 
-  // Function to add tag
-  const addNewLabel = (value, color) => {
-    console.log("Add new label", { value, color });
-    // values.tags.push({
-    //   id: uuidv4(),
-    //   tagName: value,
-    //   color: color,
-    // });
+  const addNewLabel = async (value, color) => {
+    const newLabel = {
+      labelName: value,
+      color,
+    };
+    const searchColumn = props?.boards?.find(
+      (item) => item?.columnName === props?.columnName
+    );
+    const task = searchColumn?.tasks?.find(
+      (task) => task?._id === props?.cardId
+    );
+    const remainingTask = searchColumn.tasks.filter(
+      (task) => task._id !== props?.cardId
+    );
+    const updatedLabels = [...task.labels, newLabel];
+    const updatedColumn = {
+      ...searchColumn,
+      tasks: [...remainingTask, { ...task, labels: [...updatedLabels] }],
+    };
 
-    // setValues({ ...values });
+    const result = await createColumn(updatedColumn);
+    if (result?.status === "success") {
+      setInput(false);
+      setLabelShow(false);
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
+      props.setData(boardData?.data);
+      setValues({ ...currentCard });
+    }
   };
 
-  // Function to update card title
-  const updateTitleByEnterKey = (value) => {
-    console.log("Update card title", { onEnterKey: value });
-    // setValues({ ...values, title: value });
+  const updateTitleByEnterKey = async (value) => {
+    await handleUpdateTaskTitle(value);
   };
 
-  const handleUpdateTaskTitle = (title) => {
-    setInput(false);
-    console.log("Update card title", { onBlur: title });
+  const handleUpdateTaskTitle = async (title) => {
+    const searchColumn = props?.boards?.find(
+      (item) => item?.columnName === props?.columnName
+    );
+    console.log(searchColumn);
+    const task = searchColumn?.tasks?.find(
+      (task) => task?._id === props?.cardId
+    );
+    const updatedTask = { ...task, title: title };
+    const remainingTask = searchColumn.tasks.filter(
+      (task) => task._id !== props?.cardId
+    );
+    const updatedColumn = {
+      ...searchColumn,
+      tasks: [...remainingTask, updatedTask],
+    };
+    console.log(updatedColumn);
+    const result = await createColumn(updatedColumn);
+    if (result?.status === "success") {
+      setInput(false);
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
+      props.setData(boardData?.data);
+      setValues({ ...currentCard });
+    }
   };
 
-  // Function to calculate completion percentage
   const calculatePercent = () => {
     const totalTask = values.subTasks?.length;
     const completedTask = values.subTasks?.filter(
@@ -354,24 +426,45 @@ export default function CardDetails(props) {
     return Math.floor((completedTask * 100) / totalTask) || 0;
   };
 
-  // Event handler for key press
+  // the entire stored date should be selected on calendar
+  const disabledDate = (current) => {
+    return current && current < moment().startOf("day");
+  };
+
+  const handleDateChange = async (date, dateString) => {
+    const searchColumn = props?.boards?.find(
+      (item) => item?.columnName === props?.columnName
+    );
+    const task = searchColumn?.tasks?.find(
+      (task) => task?._id === props?.cardId
+    );
+    const updatedTask = { ...task, date: dateString };
+    const remainingTask = searchColumn.tasks.filter(
+      (task) => task._id !== props?.cardId
+    );
+    const updatedColumn = {
+      ...searchColumn,
+      tasks: [...remainingTask, updatedTask],
+    };
+
+    const result = await createColumn(updatedColumn);
+    if (result.status === "success") {
+      setInput(false);
+      const currentCard = result?.data?.tasks?.find(
+        (item) => item?._id === props?.cardId
+      );
+      const boardData = await getColumnsByBoardId(searchColumn?.boardId);
+      props.setData(boardData?.data);
+      setValues({ ...currentCard });
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.code === "Enter") {
       setInput(false);
       updateTitleByEnterKey(text === "" ? values.title : text);
     }
   };
-
-  // Date handler
-  const disabledDate = (current) => {
-    return current && current < moment().startOf("day");
-  };
-
-  const handleDateChange = (date, dateString) => {
-    console.log("Update card date", dateString);
-  };
-
-  const addNewSubTask = () => {};
 
   useEffect(() => {
     document.addEventListener("keypress", handleKeyPress);
@@ -398,7 +491,7 @@ export default function CardDetails(props) {
                 <CreditCard className="icon__md" />
                 {input ? (
                   <Input
-                    onBlur={(e) => handleUpdateTaskTitle(e.target.value)}
+                    onBlur={handleUpdateTaskTitle}
                     defaultValue={values.title}
                     onChange={(e) => setText(e.target.value)}
                   />
@@ -422,17 +515,10 @@ export default function CardDetails(props) {
                 className="d-flex label__color flex-wrap"
                 style={{ width: "500px", paddingRight: "10px" }}
               >
-                {[...values?.labels, { labelName: "Test", color: "#eb5a46" }]
-                  ?.length !== 0 ? (
-                  [
-                    ...values?.labels,
-                    {
-                      labelName: "Test",
-                      color: "#eb5a46",
-                      _id: "wetuhewrituvi5uth",
-                    },
-                  ]?.map((item) => (
+                {values?.labels?.length !== 0 ? (
+                  values?.labels?.map((item) => (
                     <span
+                      key={item._id}
                       className="d-flex justify-content-between align-items-center gap-2"
                       style={{ backgroundColor: item.color }}
                     >
@@ -483,8 +569,11 @@ export default function CardDetails(props) {
                 </div>
                 <div className="my-2">
                   {values.subTasks?.length !== 0 ? (
-                    values.subTasks?.map((item, index) => (
-                      <div className="task__list d-flex align-items-start gap-2">
+                    values.subTasks?.map((item) => (
+                      <div
+                        key={item._id}
+                        className="task__list d-flex align-items-start gap-2"
+                      >
                         <input
                           className="task__checkbox"
                           type="checkbox"
@@ -585,9 +674,10 @@ export default function CardDetails(props) {
                       cursor: "pointer",
                     }}
                     disabledDate={disabledDate}
+                    placeholder={values?.date}
                   />
                 </Space>
-                <button onClick={() => props.removeCard(props.bid, values.id)}>
+                <button onClick={handleDeleteTaskCard}>
                   <span className="icon__sm">
                     <Trash />
                   </span>

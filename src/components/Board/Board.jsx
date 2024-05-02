@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Card from "../Card/Card";
 import "./Board.css";
 import { MoreHorizontal } from "react-feather";
@@ -7,30 +7,22 @@ import Dropdown from "../Dropdown/Dropdown";
 import { Droppable } from "react-beautiful-dnd";
 import { Button, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { createColumn } from "../../APIs/ColumnAPIs";
+import {
+  createColumn,
+  deleteColumn,
+  updateColumnName,
+} from "../../APIs/ColumnAPIs";
+import useHandlePropagation from "../../hooks/useHandlePropagation";
 
 const Board = (props) => {
   const [dropdown, setDropdown] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState("");
   const [isCreateTask, setIsCreateTask] = useState(false);
+  const [isEditColumnTitle, setIsEditColumnTitle] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-
-  useEffect(() => {
-    document.addEventListener("keypress", (e) => {
-      if (e.code === "Enter") {
-        setSelectedColumn("");
-        props.setShow(false);
-      }
-    });
-    return () => {
-      document.removeEventListener("keypress", (e) => {
-        if (e.code === "Enter") {
-          setSelectedColumn("");
-          props.setShow(false);
-        }
-      });
-    };
-  });
+  const [updatedColumnTitle, setUpdatedColumnTitle] = useState("");
+  const columnTitleRef = useRef(null);
+  const closeTitleInput = useHandlePropagation();
 
   const addNewTask = async () => {
     const newTaskData = {
@@ -46,19 +38,68 @@ const Board = (props) => {
       props.setRefetchColumn((prev) => !prev);
     }
   };
+
+  const handleUpdateColumnName = async (value) => {
+    const columnId = props.id;
+    const updateData = {
+      columnName: value,
+    };
+    const result = await updateColumnName(columnId, updateData);
+    if (result?.status === "success") {
+      setSelectedColumn("");
+      props.setRefetchColumn((prev) => !prev);
+      setIsEditColumnTitle(false);
+    } else {
+      setSelectedColumn("");
+    }
+  };
+
+  const handleDeleteColumn = async () => {
+    const columnId = props.id;
+    const result = await deleteColumn(columnId);
+    if (result?.status === "success") {
+      props.setRefetchColumn((prev) => !prev);
+      setDropdown(false);
+    } else {
+      setDropdown(false);
+    }
+  };
+
+  const updateTitleByEnterKey = async (value) => {
+    await handleUpdateColumnName(value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.code === "Enter") {
+      setIsEditColumnTitle(false);
+      updateTitleByEnterKey(
+        updatedColumnTitle === "" ? props.name : updatedColumnTitle
+      );
+    }
+  };
+
+  useEffect(() => {
+    closeTitleInput(columnTitleRef, setIsEditColumnTitle);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keypress", handleKeyPress);
+    return () => {
+      document.removeEventListener("keypress", handleKeyPress);
+    };
+  });
+
   return (
     <div className="board">
       <div className="board__top">
-        {props.show && props.id === selectedColumn ? (
-          <div>
-            <input
-              className="title__input"
+        {isEditColumnTitle && props.id === selectedColumn ? (
+          <div ref={columnTitleRef}>
+            <Input
+              style={{ padding: "6px", marginTop: "5px" }}
               type={"text"}
               defaultValue={props.name}
-              onBlur={(e) => {
-                setSelectedColumn("");
-                props.setName(e.target.value, props.id);
-              }}
+              onBlur={(e) => handleUpdateColumnName(e.target.value)}
+              onChange={(e) => setUpdatedColumnTitle(e.target.value)}
             />
           </div>
         ) : (
@@ -66,7 +107,7 @@ const Board = (props) => {
             <p
               onClick={() => {
                 setSelectedColumn(props?.id);
-                props.setShow(true);
+                setIsEditColumnTitle(true);
               }}
               className="board__title"
             >
@@ -88,7 +129,7 @@ const Board = (props) => {
                 setDropdown(false);
               }}
             >
-              <p onClick={() => props.removeColumn(props.id)}>Delete Column</p>
+              <p onClick={handleDeleteColumn}>Delete Column</p>
             </Dropdown>
           )}
         </div>
@@ -102,7 +143,7 @@ const Board = (props) => {
           >
             {props?.card?.map((items, index) => (
               <Card
-                  setData={props?.setData}
+                setData={props?.setData}
                 boards={props?.boards}
                 columnName={props?.name}
                 bid={props._id}
