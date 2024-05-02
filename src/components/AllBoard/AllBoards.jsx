@@ -230,7 +230,7 @@ const AllBoards = ({ selectedItem }) => {
                   setRefetchColumn={setRefetchColumn}
                 />
               ))}
-              <div
+              {/*<div
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -268,7 +268,7 @@ const AllBoards = ({ selectedItem }) => {
                     </Button>
                   </p>
                 )}
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>
